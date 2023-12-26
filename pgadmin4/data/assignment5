@@ -1,0 +1,87 @@
+CREATE TABLE patient(
+	ssn character(10) NOT NULL,
+	name character(20),
+	age integer,
+	address character(20),
+	PRIMARY KEY (ssn)
+);
+
+CREATE TABLE doctor(
+	ssn character(10) NOT NULL,
+	name character(20),
+	specialty character(100), 
+	exp_years integer,
+	PRIMARY KEY (ssn)
+);
+
+CREATE TABLE pharmaceutical(
+	name character(20),
+	phone character(15),
+	PRIMARY KEY (name)
+);
+
+CREATE TABLE pharmacy(
+	name character(20),
+	address character(20),
+	phone character(15),
+	PRIMARY KEY (name)
+);
+
+CREATE TABLE make_drug(
+	trade_name character(20),
+	formula character(20),
+	pharmaceutical_name character(20),
+	PRIMARY KEY (trade_name),
+	FOREIGN KEY (pharmaceutical_name) REFERENCES pharmaceutical(name)
+	ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE primary_phy_patient(
+	patient_ssn character(13),
+	doctor_ssn character(11),
+	PRIMARY KEY (patient_ssn, doctor_ssn),
+	FOREIGN KEY (patient_ssn) REFERENCES patient(ssn)
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (doctor_ssn) REFERENCES doctor(ssn)
+	ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE sell(
+	pharmacy_name character(20) NOT NULL,
+	trade_name character(20) NOT NULL,
+	price INTEGER,
+	PRIMARY KEY (pharmacy_name, trade_name),
+	FOREIGN KEY (pharmacy_name) REFERENCES pharmacy(name)
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (trade_name) REFERENCES make_drug(trade_name)
+	ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE prescription(
+	patient_ssn character(13) NOT NULL,
+	doctor_ssn character(11) NOT NULL,
+	trade_name character(20),
+	date character(11),
+	quantity INTEGER,
+	PRIMARY KEY (patient_ssn, doctor_ssn, trade_name),
+	FOREIGN KEY (patient_ssn) REFERENCES patient(ssn)
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (doctor_ssn) REFERENCES doctor(ssn)
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (trade_name) REFERENCES make_drug(trade_name)
+	ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE contract(
+	pharmacy_name character(20) NOT NULL,
+	pharmaceutical_name character(20) NOT NULL,
+	start_date character(11),
+	end_date character(11),
+	text_contract character(100),
+	supervisor character(20),
+	PRIMARY KEY (pharmacy_name, pharmaceutical_name),
+	FOREIGN KEY (pharmacy_name) REFERENCES pharmacy(name)
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (pharmaceutical_name) REFERENCES pharmaceutical(name)
+	ON UPDATE CASCADE ON DELETE CASCADE
+);
